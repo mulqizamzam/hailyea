@@ -1,0 +1,8 @@
+{
+  "name": "dsh-hailyea",
+  "version": "0.1.0",
+  "description": "Developer workflow Skills for planning, implementation, debugging, testing, automation, and documentation.",
+  "author": "mulqizamzam",
+  "engines": {"dsh": "0.2.1-rc.2"},
+  "skills": "./skills"
+}
