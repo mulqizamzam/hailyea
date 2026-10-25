@@ -4,5 +4,6 @@
   "description": "Evidence-based snapshot comparison CLI and developer workflow Skills for DeepSeek Harness.",
   "author": "mulqizamzam",
   "engines": { "dsh": "0.2.1-rc.2" },
+  "bundle": { "patch": "./cordis.patch.yml" },
   "skills": "./skills"
 }
