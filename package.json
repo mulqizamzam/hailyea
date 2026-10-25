@@ -1,16 +1,17 @@
 {
   "name": "dsh-hailyea",
   "version": "0.1.0",
-  "description": "Independent developer workflow harness for DeepSeek Harness: design, implement, debug, test, document, and release with evidence.",
+  "description": "Evidence-based cross-version analysis snapshots and developer workflow Skills for DeepSeek Harness.",
   "type": "module",
   "license": "MIT",
   "author": "mulqizamzam",
   "homepage": "https://github.com/mulqizamzam/hailyea#readme",
-  "repository": {"type":"git","url":"https://github.com/mulqizamzam/hailyea.git"},
-  "bugs": {"url":"https://github.com/mulqizamzam/hailyea/issues"},
-  "keywords": ["deepseek-harness","dsh-plugin","developer-workflow","testing","debugging","automation"],
-  "engines": {"node":">=22.0.0","dsh":"0.2.1-rc.2"},
-  "scripts": {"test":"node --test","validate":"node scripts/validate.mjs","check":"npm run validate && npm test","prepack":"npm run check"},
-  "files": ["skills/","assets/","docs/","README.md","LICENSE","NOTICE.md","CHANGELOG.md","dsh.plugin.json","scripts/validate.mjs"],
-  "dsh": {"plugin":{"skills":"./skills"}}
+  "repository": { "type": "git", "url": "https://github.com/mulqizamzam/hailyea.git" },
+  "bugs": { "url": "https://github.com/mulqizamzam/hailyea/issues" },
+  "keywords": ["deepseek-harness","dsh-plugin","binary-analysis","reverse-engineering","function-diff","analysis-snapshots","evidence"],
+  "engines": { "node": ">=22.0.0", "dsh": "0.2.1-rc.2" },
+  "scripts": { "test": "node --test", "validate": "node scripts/validate.mjs", "check": "npm run validate && npm test", "prepack": "npm run check" },
+  "files": ["src/","schemas/","examples/","skills/","assets/","docs/","README.md","LICENSE","NOTICE.md","CHANGELOG.md","dsh.plugin.json","scripts/validate.mjs"],
+  "bin": { "dsh-hailyea-delta": "./src/cli.mjs" },
+  "dsh": { "plugin": { "skills": "./skills" } }
 }

@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0",
+  "snapshotId": "release-a",
+  "artifact": { "name": "sample.bin", "format": "ELF", "architecture": "x86_64", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+  "tool": { "name": "ExampleAnalyzer", "version": "1.0", "configurationId": "default" },
+  "functions": [
+    { "id": "fn-old-1", "stableId": "module:entry", "address": "0x1000", "name": "entry", "fingerprint": "norm:entry-v1", "size": 64 },
+    { "id": "fn-old-2", "address": "0x1100", "name": "parse_input", "namespace": "app", "fingerprint": "norm:parse-v1", "size": 96 },
+    { "id": "fn-old-3", "address": "0x1200", "name": "legacy_helper", "fingerprint": "norm:legacy", "size": 32 }
+  ],
+  "findings": [
+    { "id": "finding-old-1", "ruleId": "review-input-boundary", "functionId": "fn-old-2", "title": "Review input boundary", "severity": "medium", "evidence": ["Example finding fixture"] },
+    { "id": "finding-old-2", "ruleId": "review-legacy-helper", "functionId": "fn-old-3", "title": "Review legacy helper", "severity": "low" }
+  ]
+}

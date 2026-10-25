@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0",
+  "snapshotId": "release-b",
+  "artifact": { "name": "sample.bin", "format": "ELF", "architecture": "x86_64", "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" },
+  "tool": { "name": "ExampleAnalyzer", "version": "1.0", "configurationId": "default" },
+  "functions": [
+    { "id": "fn-new-1", "stableId": "module:entry", "address": "0x9000", "name": "entry", "fingerprint": "norm:entry-v1", "size": 64 },
+    { "id": "fn-new-2", "address": "0x9100", "name": "parse_input", "namespace": "app", "fingerprint": "norm:parse-v2", "size": 112 },
+    { "id": "fn-new-4", "address": "0x1300", "name": "new_handler", "fingerprint": "norm:new-handler", "size": 48 }
+  ],
+  "findings": [
+    { "id": "finding-new-1", "ruleId": "review-input-boundary", "functionId": "fn-new-2", "title": "Review input boundary", "severity": "medium", "evidence": ["Example candidate fixture"] },
+    { "id": "finding-new-2", "ruleId": "review-new-handler", "functionId": "fn-new-4", "title": "Review new handler", "severity": "info" }
+  ]
+}
