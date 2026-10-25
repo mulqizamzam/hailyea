@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mulqizamzam/hailyea/schemas/analysis-snapshot-v1.schema.json",
+  "title": "Hailyea Analysis Snapshot v1",
+  "type": "object",
+  "required": ["schemaVersion", "snapshotId", "artifact", "functions"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "snapshotId": { "type": "string", "minLength": 1 },
+    "artifact": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "format": { "type": "string" },
+        "architecture": { "type": "string" },
+        "sha256": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" }
+      },
+      "additionalProperties": true
+    },
+    "tool": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "configurationId": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "functions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "stableId": { "type": "string" },
+          "address": { "type": "string" },
+          "name": { "type": "string" },
+          "namespace": { "type": "string" },
+          "fingerprint": { "type": "string" },
+          "size": { "type": "integer", "minimum": 0 },
+          "callingConvention": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "string" },
+          "ruleId": { "type": "string" },
+          "functionId": { "type": "string" },
+          "title": { "type": "string" },
+          "severity": { "enum": ["info", "low", "medium", "high", "critical", "unknown"] },
+          "evidence": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}
