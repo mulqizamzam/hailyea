@@ -31,7 +31,7 @@ The package declares a runtime-recognized `dsh.bundle.patch` entry point and tar
 
 ## Install and validate
 
-Requirements: Node.js 22.19+ and npm for local checks; the DSH runtime test uses `@deepseek-ai/dsh@0.2.1-rc.2`.
+Requirements: Node.js 22.19.x or 24+ and npm for local checks; the DSH runtime test uses `@deepseek-ai/dsh@0.2.1-rc.2`.
 
 ```sh
 git clone https://github.com/mulqizamzam/hailyea.git
