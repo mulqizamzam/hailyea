@@ -8,6 +8,9 @@ test("package has expected identity, DSH target, and CLI", async () => {
   assert.equal(pkg.name, "dsh-hailyea");
   assert.equal(pkg.author, "mulqizamzam");
   assert.equal(pkg.engines.dsh, "0.2.1-rc.2");
+  assert.equal(pkg.engines.node, ">=22.19.0");
+  assert.equal(pkg.dsh.bundle.patch, "./cordis.patch.yml");
+  assert.equal(pkg.peerDependencies["@deepseek-ai/dsh-base"], "0.2.1-rc.2");
   assert.ok(pkg.scripts.check);
   assert.equal(pkg.bin["dsh-hailyea-delta"], "./src/cli.mjs");
   assert.ok(pkg.files.includes("src/"));
@@ -17,6 +20,7 @@ test("plugin metadata matches package identity and target", async () => {
   assert.equal(manifest.name, pkg.name);
   assert.equal(manifest.author, pkg.author);
   assert.equal(manifest.engines.dsh, pkg.engines.dsh);
+  assert.equal(manifest.bundle.patch, pkg.dsh.bundle.patch);
 });
 test("Skill has valid frontmatter and substantive body", async () => {
   const content = await readFile(new URL("../skills/dsh-hailyea-engineering/SKILL.md", import.meta.url), "utf8");
@@ -32,9 +36,9 @@ test("runtime target and installation caveat are documented", async () => {
   assert.match(readme, /npm package has not been published/);
   assert.match(compatibility, /Do not infer compatibility from this package's engines\.dsh declaration alone/);
 });
-test("project declares no external runtime dependencies", async () => {
+test("project declares no bundled runtime dependencies and a DSH bundle entry", async () => {
   const pkg = await readJson("../package.json");
   assert.equal(pkg.dependencies, undefined);
   assert.equal(pkg.devDependencies, undefined);
-  assert.equal(pkg.dsh.bundle, undefined);
+  assert.equal(pkg.dsh.bundle.patch, "./cordis.patch.yml");
 });
