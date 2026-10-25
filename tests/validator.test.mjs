@@ -35,7 +35,7 @@ test("runtime target and installation caveat are documented", async () => {
   assert.match(readme, /0\.2\.1-rc\.2/);
   assert.match(readme, /npm package has not been published/);
   assert.match(compatibility, /runtime-recognized manifest is/);
-  assert.match(compatibility, /does not prove that a Skill was selected or invoked by a model/);
+  assert.match(compatibility, /proof that a Skill was selected or invoked by a model/);
 });
 test("project declares no bundled runtime dependencies and a DSH bundle entry", async () => {
   const pkg = await readJson("../package.json");
