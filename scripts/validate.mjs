@@ -9,7 +9,7 @@ try {
   assert(pkg.name === "dsh-hailyea", "package name must be dsh-hailyea");
   assert(pkg.author === "mulqizamzam", "package author must be mulqizamzam");
   assert(pkg.engines?.dsh === "0.2.1-rc.2", "package must declare requested DSH target");
-  assert(pkg.engines?.node === ">=22.19.0", "package must declare the DSH-supported Node.js floor");
+  assert(pkg.engines?.node === "^22.19.0 || >=24.0.0", "package must declare the DSH-supported Node.js floor");
   assert(pkg.dsh?.bundle?.patch === "./cordis.patch.yml", "package must declare the runtime-recognized DSH bundle patch");
   assert(pkg.peerDependencies?.["@deepseek-ai/dsh-base"] === "0.2.1-rc.2", "package must declare the matching optional DSH base peer");
   assert(manifest.name === pkg.name && manifest.version === pkg.version, "manifest identity/version mismatch");
