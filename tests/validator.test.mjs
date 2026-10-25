@@ -8,7 +8,7 @@ test("package has expected identity, DSH target, and CLI", async () => {
   assert.equal(pkg.name, "dsh-hailyea");
   assert.equal(pkg.author, "mulqizamzam");
   assert.equal(pkg.engines.dsh, "0.2.1-rc.2");
-  assert.equal(pkg.engines.node, ">=22.19.0");
+  assert.equal(pkg.engines.node, "^22.19.0 || >=24.0.0");
   assert.equal(pkg.dsh.bundle.patch, "./cordis.patch.yml");
   assert.equal(pkg.peerDependencies["@deepseek-ai/dsh-base"], "0.2.1-rc.2");
   assert.ok(pkg.scripts.check);
