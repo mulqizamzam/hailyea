@@ -2,14 +2,25 @@
 
 ## Product boundary
 
-dsh-hailyea is a Skills-first workflow package for development and release engineering. Its public workflows are plan, implement, debug, test, automate, and document. It uses host-provided tools and does not include a remote service, MCP endpoint, telemetry collector, or credential store.
+dsh-hailyea combines a deterministic local analysis-snapshot comparison CLI with a Skills-first developer workflow pack. Hailyea Delta consumes JSON exported by an upstream analysis tool; it does not implement a disassembler, execute binaries, or require a remote service.
+
+## Delta pipeline
+
+1. Validate and normalize snapshot contracts.
+2. Match functions by unique stable identity, fingerprint, and symbol; address-only matches are explicitly low confidence.
+3. Compare selected function metadata and surface additions, removals, changes, and ambiguous identities.
+4. Reconcile findings by rule/title and matched function context.
+5. Emit deterministic JSON or Markdown with warnings and limitations.
+
+The implementation favors uncertainty over false identity. Missing findings are marked for review, never automatically resolved.
 
 ## Runtime integration
 
-The inspected DSH 0.2.1-rc.2 documentation separates local skill discovery from installable profile bundles (dsh.bundle.patch) and provider plugins. A custom manifest cannot establish runtime compatibility by itself. This release includes explicit Skills and validates package shape but defers a Cordis runtime entry point until the exact plugin import contract and a real profile smoke test can be run.
+The DSH 0.2.1-rc.2 declaration is a compatibility target, not proof of compatibility. The package's Skills and descriptive manifest do not substitute for a runtime-recognized plugin entry point. A native DSH smoke test remains required.
 
 ## Deferred work
 
-- Validate exact plugin schema and installation flows on DSH 0.2.1-rc.2.
-- Decide whether delivery should remain a project-local Skill pack or become a Cordis bundle/plugin based on the intended surface.
-- Test registry installs and runtime behavior in the actual target environment.
+- Validate real exported snapshots from supported analysis tools.
+- Measure matching precision on representative datasets.
+- Test the exact DSH plugin/Skill provider contract.
+- Consider richer behavior correlation only after the core comparison is validated.
