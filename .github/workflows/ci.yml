@@ -24,6 +24,8 @@ jobs:
           node-version: 22.19.0
       - name: Install exact DSH runtime in a temporary prefix
         run: npm install --prefix "$RUNNER_TEMP/dsh-runtime" @deepseek-ai/dsh@0.2.1-rc.2
+      - name: Install pnpm required by the DSH plugin manager
+        run: npm install --global pnpm@10
       - name: Install Hailyea into an isolated DSH profile
         env:
           DSH_HOME: ${{ runner.temp }}/hailyea-dsh-home
