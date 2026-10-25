@@ -9,9 +9,11 @@
   "repository": { "type": "git", "url": "https://github.com/mulqizamzam/hailyea.git" },
   "bugs": { "url": "https://github.com/mulqizamzam/hailyea/issues" },
   "keywords": ["deepseek-harness","dsh-plugin","binary-analysis","reverse-engineering","function-diff","analysis-snapshots","evidence"],
-  "engines": { "node": ">=22.0.0", "dsh": "0.2.1-rc.2" },
+  "engines": { "node": ">=22.19.0", "dsh": "0.2.1-rc.2" },
   "scripts": { "test": "node --test", "validate": "node scripts/validate.mjs", "check": "npm run validate && npm test", "prepack": "npm run check" },
-  "files": ["src/","schemas/","examples/","skills/","assets/","docs/","README.md","LICENSE","NOTICE.md","CHANGELOG.md","dsh.plugin.json","scripts/validate.mjs"],
+  "files": ["src/","schemas/","examples/","skills/","assets/","docs/","README.md","LICENSE","NOTICE.md","CHANGELOG.md","dsh.plugin.json","cordis.patch.yml","scripts/validate.mjs"],
   "bin": { "dsh-hailyea-delta": "./src/cli.mjs" },
-  "dsh": { "plugin": { "skills": "./skills" } }
+  "dsh": { "bundle": { "patch": "./cordis.patch.yml" } },
+  "peerDependencies": { "@deepseek-ai/dsh-base": "0.2.1-rc.2" },
+  "peerDependenciesMeta": { "@deepseek-ai/dsh-base": { "optional": true } }
 }
