@@ -5,7 +5,7 @@ const nonBlank = value => typeof value === "string" && value.trim().length > 0;
 function addressOf(value, index) {
   if (typeof value === "number") {
     if (!Number.isSafeInteger(value) || value < 0) {
-      throw new TypeError(`functions[${index}].offset must be a non-negative safe integer or address string`);
+      throw new TypeError(`functions[${index}].offset/addr must be a non-negative safe integer or address string`);
     }
     return `0x${value.toString(16)}`;
   }
@@ -14,7 +14,7 @@ function addressOf(value, index) {
     if (/^0x[0-9a-f]+$/i.test(address)) return `0x${BigInt(address).toString(16)}`;
     if (/^[0-9]+$/.test(address)) return `0x${BigInt(address).toString(16)}`;
   }
-  throw new TypeError(`functions[${index}].offset must be a non-negative integer or address string`);
+  throw new TypeError(`functions[${index}].offset/addr must be a non-negative integer or address string`);
 }
 
 function basenameOf(path) {
@@ -40,7 +40,7 @@ function architectureOf(bin) {
  * Convert a radare2 `aflj` function array plus `ij` binary metadata into a
  * Hailyea Analysis Snapshot v1 document.
  *
- * Raw `aflj` offsets become per-snapshot IDs and display addresses, not stable
+ * Raw `aflj` addresses (`addr`, or `offset` in older exports) become per-snapshot IDs and display addresses, not stable
  * cross-build identities. Renamed or moved functions therefore remain uncertain
  * unless upstream exports supply another matching key in a later adapter.
  */
@@ -73,7 +73,8 @@ export function importRadare2Snapshot(functionRows, binaryInfo, options = {}) {
     if (!row || typeof row !== "object" || Array.isArray(row)) {
       throw new TypeError(`functions[${index}] must be an object`);
     }
-    const address = addressOf(row.offset, index);
+    // Radare2 `aflj` releases vary: older samples use `offset`, while 6.2.4 emits `addr`.
+    const address = addressOf(row.offset ?? row.addr, index);
     const fn = { id: `radare2:${address}`, address };
     if (nonBlank(row.name)) fn.name = row.name;
     if (row.size !== undefined) {

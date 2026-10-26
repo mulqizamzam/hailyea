@@ -44,3 +44,37 @@ jobs:
           DSH_RUNTIME_ROOT: ${{ runner.temp }}/dsh-runtime
           HAILYEA_SKILL_DIR: ${{ github.workspace }}/skills
         run: node scripts/dsh-runtime-skill-smoke.mjs
+  radare2-cross-build-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.19.0
+      - name: Install checksum-pinned Radare2 6.2.4
+        run: |
+          set -euo pipefail
+          package="$RUNNER_TEMP/radare2_6.2.4_amd64.deb"
+          curl --fail --location --retry 3 --retry-delay 2 \
+            https://github.com/radareorg/radare2/releases/download/6.2.4/radare2_6.2.4_amd64.deb \
+            --output "$package"
+          echo "7019eedc0e0e87d1f53d6b8f5fc62b898567679c5efdce7fbfc557c9e7655e90  $package" | sha256sum --check -
+          sudo apt-get update
+          sudo apt-get install --yes build-essential "$package"
+          r2 -v
+      - name: Build two ELF versions, export aflj and ij, then import and compare
+        env:
+          HAILYEA_RADARE2_E2E_OUTPUT: ${{ runner.temp }}/hailyea-radare2-e2e
+        run: node scripts/radare2-cross-build-smoke.mjs
+      - name: Upload real Radare2 exports and Delta report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hailyea-radare2-cross-build-smoke
+          path: |
+            ${{ runner.temp }}/hailyea-radare2-e2e/exports/*.json
+            ${{ runner.temp }}/hailyea-radare2-e2e/snapshots/*.json
+            ${{ runner.temp }}/hailyea-radare2-e2e/delta.json
+            ${{ runner.temp }}/hailyea-radare2-e2e/summary.json
+          retention-days: 7
+          if-no-files-found: warn

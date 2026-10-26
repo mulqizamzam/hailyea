@@ -47,6 +47,20 @@ test("supports address strings and explicit artifact metadata", () => {
   assert.equal(snapshot.functions[0].address, "0x401000");
 });
 
+test("imports the addr field emitted by current Radare2 aflj", () => {
+  const snapshot = importRadare2Snapshot(
+    [{ addr: 0x401000, name: "sym.main", size: 24 }],
+    { core: { file: "./app" }, bin: { arch: "x86", bits: 64, bintype: "ELF" } },
+    { snapshotId: "current-aflj-addr" },
+  );
+
+  assert.equal(snapshot.snapshotId, "current-aflj-addr");
+  assert.equal(snapshot.functions[0].id, "radare2:0x401000");
+  assert.equal(snapshot.functions[0].address, "0x401000");
+  assert.equal(snapshot.functions[0].name, "sym.main");
+  assert.equal(snapshot.functions[0].size, 24);
+});
+
 test("rejects malformed exports and unsafe numeric addresses", () => {
   const info = { core: { file: "app.bin" }, bin: { arch: "x86", bits: 64 } };
   assert.throws(() => importRadare2Snapshot({}, info, { snapshotId: "bad" }), /JSON array emitted by aflj/);
