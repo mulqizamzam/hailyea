@@ -3,6 +3,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { compareSnapshots } from "./delta/compare.mjs";
 import { importRadare2Snapshot } from "./delta/import-radare2.mjs";
 import { renderMarkdown } from "./delta/report-markdown.mjs";
+import { compareRadare2Binaries } from "./delta/radare2-pipeline.mjs";
 
 function usage() {
   return [
@@ -10,6 +11,7 @@ function usage() {
     "  dsh-hailyea-delta compare <before.json> <after.json> [--format json|markdown] [--output report.ext]",
     "  dsh-hailyea-delta import-radare2 <aflj.json> <ij.json> --snapshot-id <id> [--artifact-name <name>] [--sha256 <64-hex>] [--tool-version <version>] [--configuration-id <id>] [--output snapshot.json]",
     "  dsh-hailyea-delta radare2-compare <before.aflj.json> <before.ij.json> <after.aflj.json> <after.ij.json> --before-id <id> --after-id <id> [--format json|markdown] [--output report.ext]",
+    "  dsh-hailyea-delta radare2-binary-compare <before.bin> <after.bin> [--before-id <id>] [--after-id <id>] [--output-dir <dir>] [--r2-bin <path>]",
   ].join("\n");
 }
 
@@ -102,6 +104,14 @@ async function radare2CompareCommand(args) {
   else process.stdout.write(rendered);
 }
 
+async function radare2BinaryCompareCommand(args) {
+  const [beforeBinary, afterBinary, ...flags] = args;
+  if (!beforeBinary || !afterBinary) throw new Error(usage());
+  const options = parseFlags(flags, { "--before-id": "beforeId", "--after-id": "afterId", "--output-dir": "outputDir", "--r2-bin": "r2Bin" });
+  const result = await compareRadare2Binaries(beforeBinary, afterBinary, options);
+  console.log(JSON.stringify({ outputDir: result.outputDir, summary: result.manifest.summary, warnings: result.manifest.warnings }, null, 2));
+}
+
 async function main(argv) {
   const [command, ...args] = argv;
   if (!command || command === "--help" || command === "-h") {
@@ -111,6 +121,7 @@ async function main(argv) {
   if (command === "compare") return compareCommand(args);
   if (command === "import-radare2") return importRadare2Command(args);
   if (command === "radare2-compare") return radare2CompareCommand(args);
+  if (command === "radare2-binary-compare") return radare2BinaryCompareCommand(args);
   throw new Error(usage());
 }
 
