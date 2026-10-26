@@ -65,7 +65,7 @@ export function importRadare2Snapshot(functionRows, binaryInfo, options = {}) {
   if (!artifactName) {
     throw new TypeError("artifactName is required when ij metadata has no file path");
   }
-  if (options.sha256 !== undefined && !/^[a-f0-9]{64}$/i.test(options.sha256)) {
+  if (options.sha256 !== undefined && (typeof options.sha256 !== "string" || !/^[a-f0-9]{64}$/i.test(options.sha256))) {
     throw new TypeError("sha256 must contain exactly 64 hexadecimal characters");
   }
 
@@ -82,7 +82,6 @@ export function importRadare2Snapshot(functionRows, binaryInfo, options = {}) {
       }
       fn.size = row.size;
     }
-    if (nonBlank(row.calltype)) fn.callingConvention = row.calltype;
     return fn;
   });
 
