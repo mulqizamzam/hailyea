@@ -49,3 +49,8 @@ Each reconciled finding carries severity, available before/after evidence, a con
 ## Limitations
 
 This is a deterministic comparison layer over exported data, not a disassembler or decompiler. It does not establish code equivalence, exploitability, authorship, or security impact. Analysis tool/version/configuration mismatches produce warnings. The DSH `0.2.1-rc.2` bundle and filesystem-provider smoke tests are covered by CI. A live model-driven Skill invocation remains unverified.
+
+
+## End-to-end binary pipeline
+
+Run `node src/cli.mjs radare2-binary-compare before.bin after.bin --before-id build-1 --after-id build-2 --output-dir ./delta-output` with Radare2 installed. Hailyea exports `aflj` and `ij` from both inputs, computes SHA-256, imports the snapshots, and writes exports, snapshots, `delta.json`, `report.md`, and `pipeline-summary.json`. The report uses heuristic risk triage and preserves finding evidence for analyst review; it does not establish exploitability or prove a missing finding is resolved.
