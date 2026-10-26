@@ -42,6 +42,22 @@ Compare two snapshots:
 node src/cli.mjs compare examples/baseline.json examples/candidate.json
 ```
 
+Import two Radare2 export pairs and compare in one command:
+
+```sh
+node src/cli.mjs radare2-compare before.aflj.json before.ij.json after.aflj.json after.ij.json --before-id build-1 --after-id build-2 --format markdown --output delta.md
+```
+
+Matched functions report address movement and size deltas separately. Finding reconciliation retains evidence, severity, confidence, and an explicit analyst false-positive review marker; it does not automatically dismiss findings.
+
+Run the complete Radare2 binary-to-report pipeline (requires `r2` on `PATH`):
+
+```sh
+node src/cli.mjs radare2-binary-compare ./before.bin ./after.bin --before-id build-1 --after-id build-2 --output-dir ./delta-output
+```
+
+This exports `aflj` and `ij` from both binaries, computes SHA-256 hashes, imports snapshots, compares them, and writes raw exports, snapshots, `delta.json`, `report.md`, and `pipeline-summary.json`. Use only trusted binaries and an appropriately isolated analysis environment.
+
 Use Markdown output:
 
 ```sh
