@@ -57,7 +57,7 @@ npm run check
 npm pack --dry-run
 ```
 
-CI checks the package and DSH bundle configuration. It does not verify that a model has invoked a Skill in a live session.
+CI's runtime smoke test checks installation and DSH bundle configuration, not a live model invocation.
 
 ## License
 
