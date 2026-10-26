@@ -1,0 +1,18 @@
+[
+  {
+    "offset": 4294983532,
+    "name": "entry0",
+    "size": 32,
+    "calltype": "arm64",
+    "bits": 64,
+    "type": "fcn"
+  },
+  {
+    "offset": 4294983564,
+    "name": "sym.imp.printf",
+    "size": 12,
+    "calltype": "arm64",
+    "bits": 64,
+    "type": "sym"
+  }
+]

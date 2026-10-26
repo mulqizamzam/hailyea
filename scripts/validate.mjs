@@ -32,7 +32,7 @@ try {
       }
     } catch { problems.push("missing or unreadable " + relative(root, path).split(sep).join("/")); }
   }
-  for (const path of ["README.md","LICENSE","NOTICE.md","CHANGELOG.md","docs/compatibility.md","cordis.patch.yml","docs/architecture.md","docs/hailyea-delta.md","src/cli.mjs","src/delta/compare.mjs","schemas/analysis-snapshot-v1.schema.json","examples/baseline.json","examples/candidate.json"]) {
+  for (const path of ["README.md","LICENSE","NOTICE.md","CHANGELOG.md","docs/compatibility.md","cordis.patch.yml","docs/architecture.md","docs/hailyea-delta.md","docs/radare2-import.md","src/cli.mjs","src/delta/compare.mjs","src/delta/import-radare2.mjs","schemas/analysis-snapshot-v1.schema.json","examples/baseline.json","examples/candidate.json","examples/radare2-aflj.json","examples/radare2-ij.json"]) {
     try { await stat(resolve(root, path)); } catch { problems.push("required file missing: " + path); }
   }
   const readme = await readFile(resolve(root, "README.md"), "utf8");

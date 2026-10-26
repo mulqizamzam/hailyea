@@ -1,0 +1,4 @@
+{
+  "core": { "file": "sample_arm64" },
+  "bin": { "arch": "arm", "bits": 64, "bintype": "mach0" }
+}
