@@ -109,7 +109,8 @@ async function main(argv) {
     return;
   }
   if (command === "compare") return compareCommand(args);
-  if (command === "import-radare2") return importRadare2Command(args);\n  if (command === "radare2-compare") return radare2CompareCommand(args);
+  if (command === "import-radare2") return importRadare2Command(args);
+  if (command === "radare2-compare") return radare2CompareCommand(args);
   throw new Error(usage());
 }
 
