@@ -8,11 +8,12 @@ Hailyea Delta compares two JSON analysis snapshots exported by an upstream rever
 node src/cli.mjs compare examples/baseline.json examples/candidate.json
 node src/cli.mjs compare examples/baseline.json examples/candidate.json --format markdown
 node src/cli.mjs compare before.json after.json --format json --output delta.json
+node src/cli.mjs radare2-compare before.aflj.json before.ij.json after.aflj.json after.ij.json --before-id build-1 --after-id build-2 --format markdown --output delta.md
 ```
 
 ## Importing a real tool export
 
-For an initial adapter, see [Importing radare2 JSON](radare2-import.md). The importer normalizes a tool's function list and binary metadata; it does not itself analyze binaries.
+For an initial adapter, see [Importing radare2 JSON](radare2-import.md). The importer normalizes a tool's function list and binary metadata; it does not itself analyze binaries. The `radare2-compare` command combines two imports and a comparison into one local pipeline invocation.
 
 ## Snapshot contract
 
@@ -30,12 +31,18 @@ A function can provide `stableId`, `fingerprint`, `name`, `namespace`, `address`
 
 The MVP deliberately favors false uncertainty over a false confident match. Fingerprints are only as reliable as the upstream tool's normalization.
 
+## Binary movement intelligence
+
+Matched functions include explicit address-movement metadata (`before`, `after`, and `moved`) plus `sizeDelta` when both snapshots provide sizes. Movement is reported separately from semantic metadata changes so an address shift alone does not imply changed behavior. The Delta report still treats size and other comparable metadata changes as reviewable deltas.
+
 ## Finding reconciliation
 
 - `still_detected`: a corresponding rule/title appears in the candidate snapshot.
 - `newly_observed`: a candidate finding has no prior counterpart.
 - `not_reobserved_review`: a prior finding is absent and requires analyst review.
 - `ambiguous_review`: multiple candidate findings could correspond to the prior finding.
+
+Each reconciled finding carries severity, available before/after evidence, a confidence indicator, and `falsePositiveReview: needs_analyst_review` so analysts can audit why it was retained or newly observed. These fields are triage aids, not a calibrated probability or an automated false-positive verdict.
 
 **A finding missing from the newer snapshot is not automatically marked resolved.** The tool cannot infer that the behavior is fixed unless the supplied evidence and a separate, validated rule establish that conclusion.
 
