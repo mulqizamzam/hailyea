@@ -9,8 +9,12 @@ try {
   assert(pkg.name === "dsh-hailyea", "package name must be dsh-hailyea");
   assert(pkg.author === "mulqizamzam", "package author must be mulqizamzam");
   assert(pkg.engines?.dsh === "0.2.1-rc.2", "package must declare requested DSH target");
+  assert(pkg.engines?.node === "^22.19.0 || >=24.0.0", "package must declare the DSH-supported Node.js floor");
+  assert(pkg.dsh?.bundle?.patch === "./cordis.patch.yml", "package must declare the runtime-recognized DSH bundle patch");
+  assert(pkg.peerDependencies?.["@deepseek-ai/dsh-base"] === "0.2.1-rc.2", "package must declare the matching optional DSH base peer");
   assert(manifest.name === pkg.name && manifest.version === pkg.version, "manifest identity/version mismatch");
   assert(manifest.author === pkg.author, "manifest author mismatch");
+  assert(manifest.bundle?.patch === pkg.dsh.bundle.patch, "descriptive manifest bundle path mismatch");
   assert(!pkg.dependencies && !pkg.devDependencies, "unreviewed dependencies are not allowed");
   assert(pkg.bin?.["dsh-hailyea-delta"] === "./src/cli.mjs", "Delta CLI bin must be declared");
   const entries = await readdir(resolve(root, "skills"), { withFileTypes: true });
@@ -28,11 +32,12 @@ try {
       }
     } catch { problems.push("missing or unreadable " + relative(root, path).split(sep).join("/")); }
   }
-  for (const path of ["README.md","LICENSE","NOTICE.md","CHANGELOG.md","docs/compatibility.md","docs/architecture.md","docs/hailyea-delta.md","src/cli.mjs","src/delta/compare.mjs","schemas/analysis-snapshot-v1.schema.json","examples/baseline.json","examples/candidate.json"]) {
+  for (const path of ["README.md","LICENSE","NOTICE.md","CHANGELOG.md","docs/compatibility.md","cordis.patch.yml","docs/architecture.md","docs/hailyea-delta.md","src/cli.mjs","src/delta/compare.mjs","schemas/analysis-snapshot-v1.schema.json","examples/baseline.json","examples/candidate.json"]) {
     try { await stat(resolve(root, path)); } catch { problems.push("required file missing: " + path); }
   }
   const readme = await readFile(resolve(root, "README.md"), "utf8");
   assert(readme.includes(pkg.author), "README must disclose maintainer");
+  assert(readme.includes("runtime smoke test"), "README must distinguish runtime smoke tests from local checks");
   assert(!readme.includes("NationalSecurityAgency/ghidra"), "README must not contain reference repository URL");
 } catch (error) { problems.push("validation setup failed: " + error.message); }
 if (problems.length) { console.error("Validation failed:\n- " + problems.join("\n- ")); process.exitCode = 1; }

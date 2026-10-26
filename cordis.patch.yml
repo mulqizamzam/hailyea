@@ -1,0 +1,8 @@
+# Hailyea adds its Skills to the existing DSH filesystem provider.
+# Keep default project/user roots enabled; add the installed package's skills directory.
+- insert:
+    - id: hailyea-skill-filesystem
+      name: '@deepseek-ai/dsh-skill-filesystem'
+      config:
+        customSkillDirs:
+          - !!js "process.getBuiltinModule('node:path').join(process.getBuiltinModule('node:path').dirname(process.getBuiltinModule('node:module').createRequire(baseUrl).resolve('dsh-hailyea/package.json')), 'skills')"

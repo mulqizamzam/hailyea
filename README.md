@@ -5,7 +5,7 @@
 - **Maintainer:** `mulqizamzam`
 - **Version:** `0.1.0`
 - **Target runtime:** DSH `0.2.1-rc.2` (compatibility target; runtime smoke test still required)
-- **Architecture:** Local CLI plus Skills; no remote service, API key, or telemetry required.
+- **Architecture:** Local CLI plus DSH profile bundle exposing Skills through the filesystem provider; no remote service, API key, or telemetry required.
 
 This is an independently authored project and is not affiliated with or endorsed by DeepSeek.
 
@@ -27,11 +27,11 @@ The included Skill pack also supports planning, implementation, debugging, test 
 
 ## Compatibility
 
-The package declares `engines.dsh: 0.2.1-rc.2` as a target, not proof of runtime compatibility. Confirm the installed DSH command syntax and Skill provider contract for the exact release. See [compatibility notes](docs/compatibility.md). Native DSH integration has not been smoke-tested.
+The package declares a runtime-recognized `dsh.bundle.patch` entry point and targets `engines.dsh: 0.2.1-rc.2`. CI installs that exact DSH release into an isolated profile and checks bundle composition and the filesystem Skill-provider row. This config-dump smoke test does not prove a model has discovered or invoked a Skill. See [compatibility notes](docs/compatibility.md).
 
 ## Install and validate
 
-Requirements: Node.js 22+ and npm for local checks.
+Requirements: Node.js 22.19.x or 24+ and npm for local checks; the DSH runtime test uses `@deepseek-ai/dsh@0.2.1-rc.2`.
 
 ```sh
 git clone https://github.com/mulqizamzam/hailyea.git
@@ -42,7 +42,7 @@ node src/cli.mjs compare examples/baseline.json examples/candidate.json --format
 npm pack --dry-run
 ```
 
-For bundle-capable DSH releases, a GitHub install may use `dsh plugin --profile web add "github:mulqizamzam/hailyea#main"`; verify the exact syntax with `dsh plugin --help` first. The npm package has not been published. The GitHub repository is public, but runtime compatibility must be verified on the target DSH build.
+Install into a disposable DSH profile with `dsh plugin --profile web add "github:mulqizamzam/hailyea#main"` (confirm syntax with `dsh plugin --help` if your launcher differs). The npm package has not been published. Runtime bundle composition is covered by CI; live model-driven Skill invocation remains a separate verification.
 
 ## Security and limitations
 

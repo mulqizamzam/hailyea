@@ -15,3 +15,27 @@ jobs:
       - run: npm install
       - run: npm run check
       - run: npm pack --dry-run
+  dsh-runtime-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.19.0
+      - name: Install exact DSH runtime in a temporary prefix
+        run: npm install --prefix "$RUNNER_TEMP/dsh-runtime" @deepseek-ai/dsh@0.2.1-rc.2
+      - name: Install pnpm required by the DSH plugin manager
+        run: npm install --global pnpm@10
+      - name: Install Hailyea into an isolated DSH profile
+        env:
+          DSH_HOME: ${{ runner.temp }}/hailyea-dsh-home
+        run: |
+          mkdir -p "$DSH_HOME"
+          "$RUNNER_TEMP/dsh-runtime/node_modules/.bin/dsh" plugin --profile hailyea-audit add "link:$GITHUB_WORKSPACE"
+      - name: Verify composed bundle and Skill provider
+        env:
+          DSH_HOME: ${{ runner.temp }}/hailyea-dsh-home
+        run: |
+          "$RUNNER_TEMP/dsh-runtime/node_modules/.bin/dsh" --profile hailyea-audit --dump-config | tee "$RUNNER_TEMP/hailyea-dsh-config.txt"
+          grep -q 'dsh-hailyea' "$RUNNER_TEMP/hailyea-dsh-config.txt"
+          grep -q 'hailyea-skill-filesystem' "$RUNNER_TEMP/hailyea-dsh-config.txt"
