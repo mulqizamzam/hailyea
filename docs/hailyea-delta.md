@@ -54,3 +54,12 @@ This is a deterministic comparison layer over exported data, not a disassembler 
 ## End-to-end binary pipeline
 
 Run `node src/cli.mjs radare2-binary-compare before.bin after.bin --before-id build-1 --after-id build-2 --output-dir ./delta-output` with Radare2 installed. Hailyea exports `aflj` and `ij` from both inputs, computes SHA-256, imports the snapshots, and writes exports, snapshots, `delta.json`, `report.md`, and `pipeline-summary.json`. The report uses heuristic risk triage and preserves finding evidence for analyst review; it does not establish exploitability or prove a missing finding is resolved.
+
+## Accuracy and runtime hardening (comparison v1.1)
+
+- Address movement is reported as `moved: true` or `false` only when both addresses are present; otherwise it is `null` (unknown), not a false assertion of movement or stability.
+- Function-scoped findings are reconciled only when both snapshots identify the same matched function. If identity is missing or points to a different function, the old finding remains `not_reobserved_review` and the candidate is `newly_observed`.
+- A reconciled finding retains `beforeSeverity` and `afterSeverity`; its displayed `severity` is the more severe known value so a lower candidate severity cannot silently downgrade the baseline.
+- Format and architecture mismatches produce explicit comparability warnings.
+- The binary pipeline applies a 120-second timeout and 32 MiB output cap to each Radare2 command, and hashes each input again after exports to detect mutation during analysis. If an input changes, the pipeline fails instead of emitting a potentially inconsistent comparison.
+- These controls are defense-in-depth, not a sandbox. Analyze untrusted binaries in an OS-level isolated environment. Timeout, output limits, and post-analysis hashing do not replace containers/VMs, resource limits, or immutable input storage.
