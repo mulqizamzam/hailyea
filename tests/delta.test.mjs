@@ -68,7 +68,7 @@ test("validation rejects dangling finding references", () => {
 test("CLI emits JSON and Markdown from sample snapshots", () => {
   const json = spawnSync(process.execPath, ["src/cli.mjs", "compare", "examples/baseline.json", "examples/candidate.json"], { encoding: "utf8" });
   assert.equal(json.status, 0, json.stderr);
-  assert.equal(JSON.parse(json.stdout).comparisonVersion, "1.0");
+  assert.equal(JSON.parse(json.stdout).comparisonVersion, "1.1");
   const md = spawnSync(process.execPath, ["src/cli.mjs", "compare", "examples/baseline.json", "examples/candidate.json", "--format", "markdown"], { encoding: "utf8" });
   assert.equal(md.status, 0, md.stderr);
   assert.match(md.stdout, /Finding reconciliation/);
