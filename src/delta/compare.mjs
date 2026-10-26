@@ -13,7 +13,7 @@ export function compareSnapshots(beforeInput, afterInput) {
   const functions = matched.matches.map(m => {
     const delta = changes(m.before, m.after);
     const status = m.uncertain ? "uncertain" : delta.length ? "changed" : "unchanged";
-    return { beforeId: m.before.id, afterId: m.after.id, beforeAddress: m.before.address ?? null, afterAddress: m.after.address ?? null, status, match: { method: m.method, confidence: m.confidence }, changes: delta };
+    return { beforeId: m.before.id, afterId: m.after.id, beforeAddress: m.before.address ?? null, afterAddress: m.after.address ?? null, movement: { moved: (m.before.address ?? null) !== (m.after.address ?? null), before: m.before.address ?? null, after: m.after.address ?? null }, sizeDelta: Number.isFinite(m.before.size) && Number.isFinite(m.after.size) ? m.after.size - m.before.size : null, status, match: { method: m.method, confidence: m.confidence }, changes: delta };
   });
   for (const fn of matched.unmatchedBefore) functions.push({ beforeId: fn.id, beforeAddress: fn.address ?? null, status: "removed", match: null, changes: [] });
   for (const fn of matched.unmatchedAfter) functions.push({ afterId: fn.id, afterAddress: fn.address ?? null, status: "added", match: null, changes: [] });
@@ -29,14 +29,14 @@ export function compareSnapshots(beforeInput, afterInput) {
       (!oldFn || !f.functionId || afterFunctionById.get(f.functionId)?.beforeId === old.functionId));
     if (candidates.length === 1) {
       const idx = candidateFindings.indexOf(candidates[0]); usedCandidate.add(idx);
-      findings.push({ beforeId: old.id, afterId: candidates[0].id, status: "still_detected", ruleId: old.ruleId ?? null, beforeFunctionId: old.functionId ?? null, afterFunctionId: candidates[0].functionId ?? null, functionStatus: oldFn?.status ?? "unknown", rationale: "The same rule/title is present in the candidate snapshot; recheck impact if the function changed." });
+      findings.push({ beforeId: old.id, afterId: candidates[0].id, status: "still_detected", ruleId: old.ruleId ?? null, severity: candidates[0].severity ?? old.severity ?? "unknown", beforeFunctionId: old.functionId ?? null, afterFunctionId: candidates[0].functionId ?? null, functionStatus: oldFn?.status ?? "unknown", confidence: oldFn?.match?.confidence ?? "low", beforeEvidence: old.evidence ?? [], afterEvidence: candidates[0].evidence ?? [], falsePositiveReview: "needs_analyst_review", rationale: "The same rule/title is present in the candidate snapshot; recheck impact if the function changed." });
     } else if (candidates.length > 1) {
-      findings.push({ beforeId: old.id, status: "ambiguous_review", ruleId: old.ruleId ?? null, rationale: "Multiple candidate findings could correspond to this prior finding." });
+      findings.push({ beforeId: old.id, status: "ambiguous_review", ruleId: old.ruleId ?? null, severity: old.severity ?? "unknown", confidence: "low", beforeEvidence: old.evidence ?? [], afterEvidence: candidates.flatMap(f => f.evidence ?? []), falsePositiveReview: "needs_analyst_review", rationale: "Multiple candidate findings could correspond to this prior finding." });
     } else {
-      findings.push({ beforeId: old.id, status: "not_reobserved_review", ruleId: old.ruleId ?? null, rationale: "The finding was not reobserved. Absence in this snapshot is not proof of resolution." });
+      findings.push({ beforeId: old.id, status: "not_reobserved_review", ruleId: old.ruleId ?? null, severity: old.severity ?? "unknown", confidence: "low", beforeEvidence: old.evidence ?? [], afterEvidence: [], falsePositiveReview: "needs_analyst_review", rationale: "The finding was not reobserved. Absence in this snapshot is not proof of resolution." });
     }
   }
-  candidateFindings.forEach((f, i) => { if (!usedCandidate.has(i)) findings.push({ afterId: f.id, status: "newly_observed", ruleId: f.ruleId ?? null, rationale: "This finding appears only in the candidate snapshot." }); });
+  candidateFindings.forEach((f, i) => { if (!usedCandidate.has(i)) findings.push({ afterId: f.id, status: "newly_observed", ruleId: f.ruleId ?? null, severity: f.severity ?? "unknown", confidence: "low", beforeEvidence: [], afterEvidence: f.evidence ?? [], falsePositiveReview: "needs_analyst_review", rationale: "This finding appears only in the candidate snapshot." }); });
   const warnings = [];
   if (!before.tool || !after.tool) warnings.push("Tool metadata is missing from one or both snapshots; comparison provenance is incomplete.");
   else if (before.tool.name !== after.tool.name || before.tool.version !== after.tool.version || before.tool.configurationId !== after.tool.configurationId) warnings.push("Analysis tool versions or configurations differ; deltas may reflect tooling changes.");
