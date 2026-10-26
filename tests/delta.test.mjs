@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { compareSnapshots } from "../src/delta/compare.mjs";
+import { compareRadare2Binaries } from "../src/delta/radare2-pipeline.mjs";
 import { validateSnapshot, SnapshotValidationError } from "../src/delta/schema.mjs";
 const artifact = { name: "sample", format: "ELF", architecture: "x86_64" };
 const snap = (snapshotId, functions, findings = []) => ({ schemaVersion: "1.0", snapshotId, artifact, functions, findings });
@@ -150,3 +151,10 @@ test("different artifact architectures and formats produce comparability warning
   assert.match(warnings, /architectures differ/i);
 });
 
+
+test("binary pipeline rejects comparing the same resolved artifact path", async () => {
+  await assert.rejects(
+    compareRadare2Binaries("./sample.bin", "sample.bin"),
+    /same path/i
+  );
+});
