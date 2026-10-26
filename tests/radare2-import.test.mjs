@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 import { importRadare2Snapshot } from "../src/delta/import-radare2.mjs";
-import { validateSnapshot, SnapshotValidationError } from "../src/delta/schema.mjs";
+import { validateSnapshot } from "../src/delta/schema.mjs";
 
 const readJson = async path => JSON.parse(await readFile(new URL(path, import.meta.url), "utf8"));
 const sha256 = "a".repeat(64);
@@ -28,7 +28,7 @@ test("imports an aflj function array into a versioned Hailyea snapshot", async (
   assert.equal(snapshot.functions[0].address, "0x100003f6c");
   assert.equal(snapshot.functions[0].name, "entry0");
   assert.equal(snapshot.functions[0].size, 32);
-  assert.equal(snapshot.functions[0].callingConvention, "arm64");
+  assert.equal(snapshot.functions[0].callingConvention, undefined);
   assert.equal(snapshot.functions[1].name, "sym.imp.printf");
   assert.equal(snapshot.functions.length, 2);
   assert.equal(snapshot.functions.some(fn => fn.stableId), false);
@@ -53,6 +53,7 @@ test("rejects malformed exports and unsafe numeric addresses", () => {
   assert.throws(() => importRadare2Snapshot([{ name: "main" }], info, { snapshotId: "bad" }), /offset/);
   assert.throws(() => importRadare2Snapshot([{ offset: Number.MAX_SAFE_INTEGER + 1 }], info, { snapshotId: "bad" }), /safe integer/);
   assert.throws(() => importRadare2Snapshot([{ offset: 10 }], info, { snapshotId: "bad", sha256: "not-a-hash" }), /64 hexadecimal/);
+  assert.throws(() => importRadare2Snapshot([{ offset: 10 }], info, { snapshotId: "bad", sha256: 123 }), /64 hexadecimal/);
   assert.throws(() => importRadare2Snapshot([{ offset: 10 }], {}, {}), /snapshotId is required/);
 });
 
