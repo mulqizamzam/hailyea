@@ -39,3 +39,8 @@ jobs:
           "$RUNNER_TEMP/dsh-runtime/node_modules/.bin/dsh" --profile hailyea-audit --dump-config | tee "$RUNNER_TEMP/hailyea-dsh-config.txt"
           grep -q 'dsh-hailyea' "$RUNNER_TEMP/hailyea-dsh-config.txt"
           grep -q 'hailyea-skill-filesystem' "$RUNNER_TEMP/hailyea-dsh-config.txt"
+      - name: Verify the DSH filesystem provider discovers and loads Hailyea's Skill
+        env:
+          DSH_RUNTIME_ROOT: ${{ runner.temp }}/dsh-runtime
+          HAILYEA_SKILL_DIR: ${{ github.workspace }}/skills
+        run: node scripts/dsh-runtime-skill-smoke.mjs
