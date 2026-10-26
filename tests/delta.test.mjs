@@ -12,6 +12,14 @@ test("fingerprint match survives address movement", () => {
   assert.equal(result.functions[0].status, "changed");
   assert.equal(result.functions[0].match.method, "fingerprint");
 });
+test("matched function deltas report address movement and size delta separately", () => {
+  const result = compareSnapshots(snap("before", [fn("old", "0x1000", { stableId: "fn:1", size: 10 })]), snap("after", [fn("new", "0x2000", { stableId: "fn:1", size: 16 })]));
+  assert.equal(result.functions[0].movement.moved, true);
+  assert.deepEqual(result.functions[0].movement, { moved: true, before: "0x1000", after: "0x2000" });
+  assert.equal(result.functions[0].sizeDelta, 6);
+  assert.equal(result.functions[0].status, "unchanged", "address movement alone is not a semantic metadata change");
+});
+
 test("stable identity with changed fingerprint is changed", () => {
   const result = compareSnapshots(snap("before", [fn("old", "0x1000", { stableId: "engine:42", fingerprint: "a" })]), snap("after", [fn("new", "0x2000", { stableId: "engine:42", fingerprint: "b" })]));
   assert.equal(result.functions[0].status, "changed");
@@ -45,10 +53,14 @@ test("duplicate stable identities are surfaced as ambiguous", () => {
   assert.equal(result.functions.filter(item => item.status === "uncertain").length, 1);
 });
 
-test("missing findings are never called resolved", () => {
-  const result = compareSnapshots(snap("before", [fn("old", "0x1000", { fingerprint: "same" })], [{ id: "f1", ruleId: "rule-x", functionId: "old", title: "Review" }]), snap("after", [fn("new", "0x2000", { fingerprint: "same" })]));
+test("missing findings are never called resolved and retain evidence review metadata", () => {
+  const result = compareSnapshots(snap("before", [fn("old", "0x1000", { fingerprint: "same" })], [{ id: "f1", ruleId: "rule-x", functionId: "old", title: "Review", severity: "high", evidence: ["call to unsafe API"] }]), snap("after", [fn("new", "0x2000", { fingerprint: "same" })]));
   assert.equal(result.findings[0].status, "not_reobserved_review");
   assert.match(result.findings[0].rationale, /not proof of resolution/i);
+  assert.equal(result.findings[0].severity, "high");
+  assert.deepEqual(result.findings[0].beforeEvidence, ["call to unsafe API"]);
+  assert.deepEqual(result.findings[0].afterEvidence, []);
+  assert.equal(result.findings[0].falsePositiveReview, "needs_analyst_review");
 });
 test("validation rejects dangling finding references", () => {
   assert.throws(() => validateSnapshot(snap("x", [], [{ id: "f", functionId: "missing" }])), SnapshotValidationError);
@@ -61,6 +73,20 @@ test("CLI emits JSON and Markdown from sample snapshots", () => {
   assert.equal(md.status, 0, md.stderr);
   assert.match(md.stdout, /Finding reconciliation/);
 });
+test("Radare2 pipeline imports both builds and emits a Delta report in one command", () => {
+  const result = spawnSync(process.execPath, [
+    "src/cli.mjs", "radare2-compare",
+    "examples/radare2-aflj.json", "examples/radare2-ij.json",
+    "examples/radare2-aflj.json", "examples/radare2-ij.json",
+    "--before-id", "pipeline-before", "--after-id", "pipeline-after",
+  ], { encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr);
+  const delta = JSON.parse(result.stdout);
+  assert.equal(delta.before.snapshotId, "pipeline-before");
+  assert.equal(delta.after.snapshotId, "pipeline-after");
+  assert.ok(delta.functions.every(item => item.movement && Object.hasOwn(item, "sizeDelta")));
+});
+
 test("tool metadata differences are warned about", () => {
   const a = { ...snap("a", [fn("x", "0x1", { fingerprint: "same" })]), tool: { name: "A", version: "1" } };
   const b = { ...snap("b", [fn("y", "0x2", { fingerprint: "same" })]), tool: { name: "A", version: "2" } };
