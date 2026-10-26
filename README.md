@@ -42,6 +42,14 @@ Compare two snapshots:
 node src/cli.mjs compare examples/baseline.json examples/candidate.json
 ```
 
+Import two Radare2 export pairs and compare in one command:
+
+```sh
+node src/cli.mjs radare2-compare before.aflj.json before.ij.json after.aflj.json after.ij.json --before-id build-1 --after-id build-2 --format markdown --output delta.md
+```
+
+Matched functions report address movement and size deltas separately. Finding reconciliation retains evidence, severity, confidence, and an explicit analyst false-positive review marker; it does not automatically dismiss findings.
+
 Use Markdown output:
 
 ```sh
