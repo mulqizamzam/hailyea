@@ -32,7 +32,7 @@ export function matchFunctions(before, after) {
     }
   }
   const ambiguous = [];
-  for (const [method, fn] of [["fingerprint", x => x.fingerprint], ["symbol", x => x.name ? key(x.namespace, x.name) : null]]) {
+  for (const [method, fn] of [["stableId", x => x.stableId], ["fingerprint", x => x.fingerprint], ["symbol", x => x.name ? key(x.namespace, x.name) : null]]) {
     const l = indexBy(before.filter(x => !usedBefore.has(x.id)), fn);
     const r = indexBy(after.filter(x => !usedAfter.has(x.id)), fn);
     for (const [k, xs] of l) if (k && (xs.length > 1 || (r.get(k)?.length ?? 0) > 1) && r.has(k)) {
