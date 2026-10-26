@@ -102,6 +102,7 @@ async function main() {
     const ij = exportWithRadare2(build.binary, "ij", "binary metadata object");
     assert.ok(Array.isArray(aflj), `${build.id}: aflj must return an array`);
     assert.ok(ij && typeof ij === "object" && !Array.isArray(ij), `${build.id}: ij must return an object`);
+    console.log(`${build.id}: aflj rows=${aflj.length}; first row=${JSON.stringify(aflj[0])}`);
 
     build.afljPath = join(exportDir, `${build.id}.aflj.json`);
     build.ijPath = join(exportDir, `${build.id}.ij.json`);
