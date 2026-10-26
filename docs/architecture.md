@@ -2,7 +2,7 @@
 
 ## Product boundary
 
-dsh-hailyea combines a deterministic local analysis-snapshot comparison CLI with a Skills-first developer workflow pack. Hailyea Delta consumes JSON exported by an upstream analysis tool; it does not implement a disassembler, execute binaries, or require a remote service.
+dsh-hailyea combines a deterministic local analysis-snapshot comparison CLI with a Skills-first developer workflow pack. Hailyea Delta consumes JSON exported by an upstream analysis tool; an optional radare2 adapter normalizes `aflj` and `ij` output into the versioned snapshot contract. It does not implement a disassembler, execute binaries, or require a remote service.
 
 ## Delta pipeline
 
@@ -16,7 +16,7 @@ The implementation favors uncertainty over false identity. Missing findings are 
 
 ## Runtime integration
 
-The DSH 0.2.1-rc.2 declaration is a compatibility target, not proof of compatibility. The package's Skills and descriptive manifest do not substitute for a runtime-recognized plugin entry point. A native DSH smoke test remains required.
+The DSH `0.2.1-rc.2` bundle is covered by CI. The exact installed runtime's filesystem provider is tested for discovering and loading the Hailyea Engineering Skill. A live model-driven session is not part of this keyless smoke test.
 
 ## Deferred work
 
