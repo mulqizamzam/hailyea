@@ -36,7 +36,7 @@ The importer reads `core.file` and `bin` metadata from `ij` where available. You
 
 ## Matching limits
 
-The importer maps each `aflj` `offset` to an address and a unique ID within that snapshot. **It does not treat addresses as stable identities across builds** and does not generate function fingerprints. When a function name is unique in both snapshots, Delta may match it by symbol; moved or renamed functions without another stable key may instead appear as additions/removals or uncertain matches.
+The importer maps `offset`, `name`, and `size`; it does not infer a calling convention from `calltype`, and it does not generate fingerprints. Each `offset` becomes an address and a unique ID within that snapshot. **Addresses are not treated as stable identities across builds.** When a function name is unique in both snapshots, Delta may match it by symbol; moved or renamed functions without another stable key may instead appear as additions/removals or uncertain matches.
 
 The checked-in `examples/radare2-aflj.json` is a compact function-list excerpt used to exercise import behavior, not a pair of full production snapshots. It demonstrates the JSON fields commonly emitted by `aflj` (`offset`, `name`, `size`, and `calltype`); see the [radare2 JSON scripting example](https://github.com/NDXDeveloper/reverse-engineering-gcc-gpp-training/blob/main/09-ida-radare2-binja/04-scripting-r2pipe.md) and the [public function-list output example](https://github.com/rizinorg/cutter/issues/3345).
 
