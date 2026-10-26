@@ -92,3 +92,61 @@ test("tool metadata differences are warned about", () => {
   const b = { ...snap("b", [fn("y", "0x2", { fingerprint: "same" })]), tool: { name: "A", version: "2" } };
   assert.ok(compareSnapshots(a, b).warnings.some(x => /differ/.test(x)));
 });
+
+test("movement is unknown when either snapshot lacks an address", () => {
+  const result = compareSnapshots(
+    snap("before", [fn("old", undefined, { stableId: "fn:address-unknown", fingerprint: "same" })]),
+    snap("after", [fn("new", "0x2000", { stableId: "fn:address-unknown", fingerprint: "same" })])
+  );
+  assert.equal(result.functions[0].movement.moved, null);
+  assert.equal(result.functions[0].assessment.moved, false);
+  assert.notEqual(result.functions[0].assessment.category, "address-movement");
+});
+
+test("finding reconciliation does not cross matched function identities", () => {
+  const before = snap("before", [
+    fn("old-a", "0x1000", { stableId: "fn:a", fingerprint: "a" }),
+    fn("old-b", "0x2000", { stableId: "fn:b", fingerprint: "b" })
+  ], [{ id: "finding-old", ruleId: "dangerous-call", functionId: "old-a", severity: "high", evidence: ["old evidence"] }]);
+  const after = snap("after", [
+    fn("new-a", "0x1100", { stableId: "fn:a", fingerprint: "a" }),
+    fn("new-b", "0x2200", { stableId: "fn:b", fingerprint: "b" })
+  ], [{ id: "finding-new", ruleId: "dangerous-call", functionId: "new-b", severity: "low", evidence: ["new evidence"] }]);
+  const result = compareSnapshots(before, after);
+  assert.equal(result.findings[0].status, "not_reobserved_review");
+  assert.equal(result.findings[1].status, "newly_observed");
+});
+
+test("function-scoped finding is not reconciled to a finding with missing function identity", () => {
+  const before = snap("before", [fn("old", "0x1000", { stableId: "fn:a" })], [
+    { id: "finding-old", ruleId: "rule-x", functionId: "old", severity: "high" }
+  ]);
+  const after = snap("after", [fn("new", "0x2000", { stableId: "fn:a" })], [
+    { id: "finding-new", ruleId: "rule-x", severity: "low" }
+  ]);
+  const result = compareSnapshots(before, after);
+  assert.deepEqual(result.findings.map(item => item.status), ["not_reobserved_review", "newly_observed"]);
+});
+
+test("reconciled finding preserves the more severe baseline severity", () => {
+  const before = snap("before", [fn("old", "0x1000", { stableId: "fn:a" })], [
+    { id: "finding-old", ruleId: "rule-x", functionId: "old", severity: "critical" }
+  ]);
+  const after = snap("after", [fn("new", "0x2000", { stableId: "fn:a" })], [
+    { id: "finding-new", ruleId: "rule-x", functionId: "new", severity: "low" }
+  ]);
+  const finding = compareSnapshots(before, after).findings[0];
+  assert.equal(finding.status, "still_detected");
+  assert.equal(finding.severity, "critical");
+  assert.equal(finding.beforeSeverity, "critical");
+  assert.equal(finding.afterSeverity, "low");
+});
+
+test("different artifact architectures and formats produce comparability warnings", () => {
+  const before = { ...snap("before", []), artifact: { ...artifact, format: "ELF", architecture: "x86_64" } };
+  const after = { ...snap("after", []), artifact: { ...artifact, format: "PE", architecture: "arm64" } };
+  const warnings = compareSnapshots(before, after).warnings.join("\n");
+  assert.match(warnings, /formats differ/i);
+  assert.match(warnings, /architectures differ/i);
+});
+
