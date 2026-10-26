@@ -67,6 +67,7 @@ jobs:
           HAILYEA_RADARE2_E2E_OUTPUT: ${{ runner.temp }}/hailyea-radare2-e2e
         run: node scripts/radare2-cross-build-smoke.mjs
       - name: Upload real Radare2 exports and Delta report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: hailyea-radare2-cross-build-smoke
@@ -76,3 +77,4 @@ jobs:
             ${{ runner.temp }}/hailyea-radare2-e2e/delta.json
             ${{ runner.temp }}/hailyea-radare2-e2e/summary.json
           retention-days: 7
+          if-no-files-found: warn
