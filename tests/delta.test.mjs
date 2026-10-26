@@ -27,6 +27,24 @@ test("ambiguous duplicate fingerprints are surfaced as uncertain", () => {
   assert.ok(result.ambiguousMatches.length > 0);
   assert.ok(result.functions.some(x => x.status === "uncertain"));
 });
+test("duplicate stable identities are surfaced as ambiguous", () => {
+  const before = snap("before", [
+    fn("before-a", "0x1000", { stableId: "engine:duplicate" }),
+    fn("before-b", "0x2000", { stableId: "engine:duplicate" })
+  ]);
+  const after = snap("after", [
+    fn("after-a", "0x9000", { stableId: "engine:duplicate" }),
+    fn("after-b", "0xA000", { stableId: "engine:duplicate" })
+  ]);
+  const result = compareSnapshots(before, after);
+  assert.ok(result.ambiguousMatches.some(item =>
+    item.method === "stableId" &&
+    item.beforeIds.length === 2 &&
+    item.afterIds.length === 2
+  ));
+  assert.equal(result.functions.filter(item => item.status === "uncertain").length, 1);
+});
+
 test("missing findings are never called resolved", () => {
   const result = compareSnapshots(snap("before", [fn("old", "0x1000", { fingerprint: "same" })], [{ id: "f1", ruleId: "rule-x", functionId: "old", title: "Review" }]), snap("after", [fn("new", "0x2000", { fingerprint: "same" })]));
   assert.equal(result.findings[0].status, "not_reobserved_review");
