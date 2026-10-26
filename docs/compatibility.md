@@ -12,7 +12,7 @@ The bundle declares `engines.dsh: 0.2.1-rc.2` and an optional matching `@deepsee
 
 CI installs the exact DSH CLI release into an isolated prefix, adds this checkout to an isolated profile, and checks `dsh --profile hailyea-audit --dump-config` for the Hailyea bundle and Skill provider row. This verifies package installation and configuration composition without requiring model credentials.
 
-A config dump is not an end-to-end model invocation. Skill discovery in a live session, loading a Skill body through the model-facing `skill` tool, and removal/reinstallation from registry/GitHub sources remain separate manual checks unless CI runs those flows against a configured DSH environment.
+CI also asks the filesystem provider shipped with that exact DSH installation to discover and load the Hailyea Engineering Skill from the checkout. This verifies the provider contract and reads the actual Skill body without model credentials. It is still not a live agent turn: discovery in the model-facing catalog, invocation of the `skill` tool by an agent, and removal/reinstallation from registry/GitHub sources remain separate manual checks.
 
 ## Local manual verification
 
