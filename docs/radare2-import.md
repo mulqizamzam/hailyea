@@ -40,4 +40,10 @@ The importer maps `offset`, `name`, and `size`; it does not infer a calling conv
 
 The checked-in `examples/radare2-aflj.json` is a compact excerpt of public function-list output used to test import behavior, not a pair of full production snapshots. `examples/radare2-ij.json` is illustrative metadata for the test fixture, not a paired export from that binary. The examples demonstrate fields commonly emitted by `aflj` (`offset`, `name`, `size`, and `calltype`); see the [radare2 JSON scripting example](https://github.com/NDXDeveloper/reverse-engineering-gcc-gpp-training/blob/main/09-ida-radare2-binja/04-scripting-r2pipe.md) and the [public function-list output example](https://github.com/rizinorg/cutter/issues/3345).
 
-A real cross-version validation still requires exports from both builds of the same artifact and a review of the resulting matches. Do not interpret absence of a finding as evidence that it was fixed.
+## End-to-end cross-build smoke test
+
+GitHub Actions runs `scripts/radare2-cross-build-smoke.mjs` with Radare2 6.2.4 from a checksum-pinned official release package. The test compiles the checked-in C fixture twice with different build variants, exports actual `aflj` function arrays and `ij` metadata from both ELF binaries, imports both exports through the CLI, and compares the snapshots.
+
+The smoke test checks that a known moved function is matched by symbol rather than address, a known changed function size is reported as changed, an unchanged function remains matched, and a newly introduced symbol is reported as added. JSON exports, snapshots, and the comparison report are uploaded as a short-lived CI artifact for inspection.
+
+This validates the importer and comparison pipeline against real Radare2 output from controlled compiled test binaries. **It does not replace validation using representative before/after builds of the target production artifact.** That still requires both real exports and review of the resulting matches. Do not interpret absence of a finding as evidence that it was fixed.
