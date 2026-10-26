@@ -17,7 +17,7 @@ test("matched function deltas report address movement and size delta separately"
   assert.equal(result.functions[0].movement.moved, true);
   assert.deepEqual(result.functions[0].movement, { moved: true, before: "0x1000", after: "0x2000" });
   assert.equal(result.functions[0].sizeDelta, 6);
-  assert.equal(result.functions[0].status, "unchanged", "address movement alone is not a semantic metadata change");
+  assert.equal(result.functions[0].status, "changed", "the size delta should drive changed status while movement is reported separately");
 });
 
 test("stable identity with changed fingerprint is changed", () => {
