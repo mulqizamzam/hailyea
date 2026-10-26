@@ -97,7 +97,7 @@ async function radare2CompareCommand(args) {
     { ...shared, snapshotId: options.afterId },
   );
   const result = compareSnapshots(before, after);
-  const rendered = format === "markdown" ? renderMarkdown(result) : JSON.stringify(result, null, 2) + "\\n";
+  const rendered = format === "markdown" ? renderMarkdown(result) : JSON.stringify(result, null, 2) + "\n";
   if (options.output) await writeFile(options.output, rendered, "utf8");
   else process.stdout.write(rendered);
 }
