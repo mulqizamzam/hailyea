@@ -10,6 +10,10 @@ node src/cli.mjs compare examples/baseline.json examples/candidate.json --format
 node src/cli.mjs compare before.json after.json --format json --output delta.json
 ```
 
+## Importing a real tool export
+
+For an initial adapter, see [Importing radare2 JSON](radare2-import.md). The importer normalizes a tool's function list and binary metadata; it does not itself analyze binaries.
+
 ## Snapshot contract
 
 Each input declares `schemaVersion: "1.0"`, a unique `snapshotId`, artifact metadata, a `functions` array, and an optional `findings` array. Function IDs need only be unique within a snapshot. Prefer an upstream stable identity or normalized fingerprint. See `schemas/analysis-snapshot-v1.schema.json` and the example snapshots.
@@ -37,4 +41,4 @@ The MVP deliberately favors false uncertainty over a false confident match. Fing
 
 ## Limitations
 
-This is a deterministic comparison layer over exported data, not a disassembler or decompiler. It does not establish code equivalence, exploitability, authorship, or security impact. Analysis tool/version/configuration mismatches produce warnings. Native DSH runtime compatibility remains unverified until tested against the exact supported DSH build.
+This is a deterministic comparison layer over exported data, not a disassembler or decompiler. It does not establish code equivalence, exploitability, authorship, or security impact. Analysis tool/version/configuration mismatches produce warnings. The DSH `0.2.1-rc.2` bundle and filesystem-provider smoke tests are covered by CI. A live model-driven Skill invocation remains unverified.
